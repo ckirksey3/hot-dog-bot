@@ -70,13 +70,18 @@ function onTweet(tweet) {
     }
     if (regexFilter.test(tweet.text)) {
         console.log(tweet);
-        console.log("RT: " + tweet.text);
         // Note we're using the id_str property since javascript is not accurate
         // for 64bit ints.
-        tu.update({
+        if(tweet.entities.hasOwnProperty('media') && tweet.entities.media.length > 0) {
+            tu.update({
             status: "@" + tweet.user.screen_name + " Not sure whether this is a hotdog",
-            in_reply_to_status_id: tweet.id_str
-        }, onReTweet);
+                in_reply_to_status_id: tweet.id_str
+            }, onReTweet);
+            console.log("Image URL: " + tweet.entities.media[0]['media_url'])
+        } else {
+            console.log("Tweet did not have an image")
+        }
+        
     }
 }
 
