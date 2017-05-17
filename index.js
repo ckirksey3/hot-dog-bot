@@ -73,8 +73,9 @@ function onTweet(tweet) {
         console.log("RT: " + tweet.text);
         // Note we're using the id_str property since javascript is not accurate
         // for 64bit ints.
-        tu.retweet({
-            id: tweet.id_str
+        tu.update({
+            status: "@" + tweet.user.screen_name + " Not sure whether this is a hotdog",
+            in_reply_to_status_id: tweet.id_str
         }, onReTweet);
     }
 }
