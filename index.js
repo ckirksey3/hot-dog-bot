@@ -15,7 +15,6 @@ app.listen(process.env.PORT || 5000);
 // Config.keys uses environment variables so sensitive info is not in the repo.
 var config = {
     me: 'IsItAHotdog', // The authorized account with a list to retweet.
-    myList: 'cool-people', // The list we want to retweet.
     regexFilter: '', // Accept only tweets matching this regex pattern.
     regexReject: '', // AND reject any tweets matching this regex pattern.
 
@@ -64,8 +63,18 @@ function onTweet(tweet) {
         console.log(tweet);
         // Note we're using the id_str property since javascript is not accurate
         // for 64bit ints.
+        var has_image = false;
+        var image_url = '';
         if(tweet.entities.hasOwnProperty('media') && tweet.entities.media.length > 0) {
-            var image_url = tweet.entities.media[0]['media_url'];
+            has_image = true;
+            image_url = tweet.entities.media[0]['media_url'];
+        } else if (tweet.hasOwnProperty('extended_tweet')) {
+            if(tweet.extended_tweet.entities.hasOwnProperty('media') && tweet.extended_tweet.entities.media.length > 0) {
+                has_image = true;
+                image_url = tweet.extended_tweet.entities.media[0]['media_url'];
+            }
+        }
+        if(has_image) {
             request.get(image_url, function (error, response, body) {
                 if (!error && response.statusCode == 200) {
                     var params = {
