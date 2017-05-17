@@ -17,7 +17,7 @@ var config = {
     me: 'IsItAHotdog', // The authorized account with a list to retweet.
     myList: 'cool-people', // The list we want to retweet.
     regexFilter: '', // Accept only tweets matching this regex pattern.
-    regexReject: '(RT|@)', // AND reject any tweets matching this regex pattern.
+    regexReject: '', // AND reject any tweets matching this regex pattern.
 
     keys: {
         consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -26,29 +26,6 @@ var config = {
         access_token_secret: process.env.TWITTER_ACCESS_TOKEN_SECRET
     },
 };
-
-
-// Get the members of our list, and pass them into a callback function.
-function getListMembers(callback) {
-    var memberIDs = [];
-
-    tu.listMembers({owner_screen_name: config.me,
-        slug: config.myList
-    },
-    function(error, data){
-        if (!error) {
-            for (var i=0; i < data.users.length; i++) {
-                memberIDs.push(data.users[i].id_str);
-            }
-
-            // This callback is designed to run listen(memberIDs).
-            callback(memberIDs);
-        } else {
-            console.log(error);
-            console.log(data);
-        }
-    });
-}
 
 // What to do after we retweet something.
 function onReTweet(err) {
@@ -127,9 +104,9 @@ function onTweet(tweet) {
 }
 
 // Function for listening to twitter streams and retweeting on demand.
-function listen(listMembers) {
+function listen() {
     tu.filter({
-        follow: listMembers
+        track: 'isitahotdog'
     }, function(stream) {
         console.log("listening to stream");
         stream.on('tweet', onTweet);
@@ -142,4 +119,4 @@ var tu = require('tuiter')(config.keys);
 
 // Run the application. The callback in getListMembers ensures we get our list
 // of twitter streams before we attempt to listen to them via the twitter API.
-getListMembers(listen);
+listen();
